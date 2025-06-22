@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<section>
+  <article>
+    <h1>Make a reservation</h1>
+    <!--Begin row-->
+    <div class="row">
+      <!--Begin col-->
+      <div class="column">
+        <form action="" method="post" id="reservation">
+          {% csrf_token %}
+          {{form.as_p}}
+          <input type="submit" id="button">
+        </form>
+      </div>
+      <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('reservation');
+
+    form.addEventListener('submit', function (e) {
+        e.preventDefault(); // Prevent the default form submission
+
+        const formData = new FormData(form);
+
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',  // Optional, useful for distinguishing AJAX in Django
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);  // Show success message from Django
+            form.reset(); // Optional: clears the form after submission
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Something went wrong.'); // Show error alert
+        });
+    });
+});
+</script>
+      <!--End col-->
+
+      <!--Begin col-->
+      <div class="column">
+        <div class="videowrap">
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d11898.289517452584!2d-87.60853049433447!3d41.79442860243028!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x880e2912ce6f7027%3A0xc0cfb5545d4a37b2!2sHyde%20Park%2C%20Chicago%2C%20IL%2C%20USA!5e0!3m2!1sen!2spt!4v1662384760663!5m2!1sen!2spt"
+            width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+      </div>
+      <!--End col-->
+    </div>
+    <!--End row-->
+
+
+
+
+  </article>
+</section>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const dateInput = document.querySelector('input[name="date"]');
+    const timeSelect = document.getElementById('id_time');
+
+    if (dateInput && timeSelect) {
+        dateInput.addEventListener('change', function () {
+            const selectedDate = dateInput.value;
+            if (!selectedDate) return;
+
+            fetch(`/booked-slots/?date=${selectedDate}`)
+                .then(response => response.json())
+                .then(data => {
+                    const bookedTimes = data.booked_times;
+
+                    // Reset all options first
+                    for (let option of timeSelect.options) {
+                        option.disabled = false;
+                        option.textContent = option.textContent.replace(" (Booked)", "");
+                    }
+
+                    // Disable options that are already booked
+                    for (let option of timeSelect.options) {
+                        if (bookedTimes.includes(option.value)) {
+                            option.disabled = true;
+                            if (!option.textContent.includes("Booked")) {
+                                option.textContent += " (Booked)";
+                            }
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading booked slots:', error);
+                });
+        });
+    }
+});
+</script>
+{% endblock %}
