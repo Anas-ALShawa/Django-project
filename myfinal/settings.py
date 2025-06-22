@@ -77,10 +77,12 @@ WSGI_APPLICATION = 'myfinal.wsgi.application'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
+database_url = os.environ.get('MYSQL_URL') or os.environ.get('DATABASE_URL')
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.environ.get('MYSQL_URL')
+        default=database_url,
+        conn_max_age=600,
+        conn_health_checks=True,
     )
 }
 

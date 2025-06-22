@@ -8,7 +8,7 @@ router.register(r'menu-items', views.MenuItemViewSet, basename='menuitem')
 urlpatterns = [
     path('api/', include(router.urls)), 
     path('api/logout/', views.LogoutView.as_view(), name='api-logout'),
-    path('home/', views.home,name="home"),
+    path('', views.home,name="home"),
     path('about/', views.about,name="about"),
     path('book/', views.book,name="book"),
     path('menu-items/', views.menu_view,name="menu"),
