@@ -19,7 +19,9 @@ from django.urls import path,include
 from django.contrib.auth import views as auth_views
 from myapp.views import custom_logout_view
 from rest_framework.authtoken.views import obtain_auth_token
-
+from django.http import JsonResponse
+def health_check(request):
+    return JsonResponse({"status": "ok", "message": "Django is running"})
 urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     path('admin/', admin.site.urls),
@@ -27,4 +29,5 @@ urlpatterns = [
     path('accounts/logout/', custom_logout_view, name='logout'),
     path('', include("myapp.urls")),
     path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
+    path('health/', health_check),
 ]
