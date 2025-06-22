@@ -77,14 +77,28 @@ WSGI_APPLICATION = 'myfinal.wsgi.application'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-database_url = os.environ.get('MYSQL_URL') or os.environ.get('DATABASE_URL')
-DATABASES = {
-    'default': dj_database_url.config(
-        default=database_url,
-        conn_max_age=600,
-        conn_health_checks=True,
-    )
-}
+if 'DATABASE_URL' in os.environ:
+    database_url = os.environ.get('DATABASE_URL')
+    if database_url and database_url != '://' and 'mysql' in database_url:
+        DATABASES = {
+            'default': dj_database_url.parse(database_url)
+        }
+    else:
+        # Fallback during build
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': ':memory:',
+            }
+        }
+else:
+    # Local development
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation
